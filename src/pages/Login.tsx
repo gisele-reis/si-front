@@ -1,8 +1,28 @@
 import { useState } from "react";
+import useAuth from "../hooks/useAuth";
+import axios from "axios";
 
 const Login = () => {
+    const { login } = useAuth(); 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+
+
+    const handleSubmit = async (e: any) => {
+        e.preventDefault();
+
+        try{
+            const response = await axios.post("http://localhost:3000/auth/login", {email, password});
+
+            const { token } = response.data;
+            
+            login({ token, email });
+        } catch(error) {
+            setError('Erro na autenticação. Verifique suas credenciais.')
+        }
+    }
+
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-[#F2F2F2]">
@@ -11,7 +31,7 @@ const Login = () => {
                     <h1 className="text-6xl font-bold leading-tight tracking-normal text-[#844c81] self-end uppercase">Health Check</h1>
                 </div>
                 <div className="flex w-[450px] items-center justify-center px-6 py-8 bg-white rounded-xl shadow-lg border">
-                    <form className="flex flex-col w-full items-center justify-between gap-8 px-4" >
+                    <form onSubmit={handleSubmit} className="flex flex-col w-full items-center justify-between gap-8 px-4" >
                         <div className="flex flex-col w-full gap-6">
                         <input 
                                 type="email"  
@@ -30,9 +50,10 @@ const Login = () => {
                                 required
                             /> 
                         </div>
+                        {error && <p className="text-red-500">{error}</p>}
                         <div className="flex flex-col w-full items-center gap-2">
                             <button type="submit" className="bg-[#844c81] h-[40px] w-[150px] font-semibold rounded-[10px] hover:bg-[#bd80b8] transition duration-300 text-white">Entrar</button>
-                            <span className="text-[15px]">Ainda não possui uma conta? <a href="/register" className="text-[#844c81] font-bold">Cadastre-se</a></span>
+                            <span className="text-[15px]">Ainda não possui uma conta? <a href="/cadastro" className="text-[#844c81] font-bold">Cadastre-se</a></span>
                         </div>
                     </form>
                 </div>

@@ -34,7 +34,7 @@ const Cadastro = () => {
             <form className="flex flex-col lg:ml-[15rem] w-1/2 items-start justify-center px-6 py-10 bg-white rounded-xl shadow-lg border gap-6">
                 <div className="grid grid-cols-2 pl-8 w-full">
                     <div className="flex flex-col w-2/3">
-                        <label className="mb-2 text-xl font-medium">Nome</label>
+                        <label className="mb-2 text-xl font-medium">Nome <a className="text-red-500">*</a></label>
                         <input
                             type="text"  
                             name="name" 
@@ -45,7 +45,7 @@ const Cadastro = () => {
                         />
                     </div>
                     <div className="flex flex-col w-2/3">
-                        <label className="mb-2 text-xl font-medium">E-mail</label>
+                        <label className="mb-2 text-xl font-medium">E-mail <a className="text-red-500">*</a></label>
                         <input 
                             type="email" 
                             name="email"
@@ -57,7 +57,7 @@ const Cadastro = () => {
                 </div>
                 <div className="grid grid-cols-2 pl-8 w-full">
                     <div className="flex flex-col w-2/3">
-                        <label className="mb-2 text-xl font-medium">Senha</label>
+                        <label className="mb-2 text-xl font-medium">Senha <a className="text-red-500">*</a></label>
                         <input 
                             type="password" 
                             name="senha" 
@@ -67,7 +67,7 @@ const Cadastro = () => {
                             className="bg-[#edddee] rounded focus:outline-[#844c81] p-1" />
                     </div>
                     <div className="flex flex-col w-2/3">
-                        <label className="mb-2 text-xl font-medium">Repita a Senha</label>
+                        <label className="mb-2 text-xl font-medium">Repita a Senha <a className="text-red-500">*</a></label>
                         <input 
                             type="password" 
                             name="senha2" 
@@ -79,7 +79,7 @@ const Cadastro = () => {
                 </div>
                 <div className="grid grid-cols-2 pl-8 w-full">
                     <div className="flex flex-col w-2/3">
-                        <label className="mb-2 text-xl font-medium">Peso (kg)</label>
+                        <label className="mb-2 text-xl font-medium">Peso (kg) <a className="text-red-500">*</a></label>
                         <input 
                             type="text" 
                             name="peso" 
@@ -89,7 +89,7 @@ const Cadastro = () => {
                             className="bg-[#edddee] rounded focus:outline-[#844c81] p-1" />
                     </div>
                     <div className="flex flex-col w-2/3">
-                        <label className="mb-2 text-xl font-medium">Altura (m)</label>
+                        <label className="mb-2 text-xl font-medium">Altura (m) <a className="text-red-500">*</a></label>
                         <input 
                             type="text" 
                             name="altura" 
