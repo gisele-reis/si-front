@@ -29,11 +29,12 @@ export default function Sidebar() {
                 <h1 className="text-3xl font-bold mt-4 text-[#edddee]">HealthCheck</h1>
             </div>
             <div className='lg:basis-1/2 flex lg:flex-col lg:justify-start items-center lg:my-16 lg:w-full lg:px-8 gap-4 lg:gap-8 '>
-                {links.map((link)=>{
+                {links.map((link, index )=>{
                   const isActive = location.pathname === link.path;
                   return(
                         <Link 
-                          to={link.path} 
+                          to={link.path}
+                          key={index} 
                           className={`flex lg:w-full justify-center lg:justify-start items-center lg:py-2 transition ease-in-out gap-3 px-3 rounded-lg 
                           ${isActive ? 'text-[#844c81] bg-[#edddee]' : 'text-[#edddee] hover:bg-[#edddee] hover:text-[#844c81]'}`}
                         >

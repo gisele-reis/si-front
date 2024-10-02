@@ -7,5 +7,5 @@ export default function useAuth(): IAuthContextType {
     if(context === undefined) {
         throw new Error("useAuth deve ser usado dentro de um AuthProvider")
     }
-    return context;
+    return context; 
 }

@@ -9,19 +9,25 @@ const Login = () => {
     const [error, setError] = useState('');
 
 
-    const handleSubmit = async (e: any) => {
+    
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
-        try{
-            const response = await axios.post("http://localhost:3000/auth/login", {email, password});
-
-            const { token } = response.data;
+    
+        try {
             
-            login({ token, email });
-        } catch(error) {
-            setError('Erro na autenticação. Verifique suas credenciais.')
+            const response = await axios.post("http://localhost:3000/auth/login", { email, password });
+    
+            const { access_token } = response.data;
+    
+            login({ token: access_token, email }); 
+    
+        } catch (error) {
+            console.error(error); 
+            setError('Erro na autenticação. Verifique suas credenciais.');
         }
-    }
+    };
+    
 
 
     return (

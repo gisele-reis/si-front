@@ -6,32 +6,76 @@ const Cadastro = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [peso, setPeso] = useState('');
-    const [altura, setAltura] = useState('');
+    const [peso, setPeso] = useState<number | null>();
+    const [altura, setAltura] = useState<number | null>();
     const [termos, setTermos] = useState(false);
 
-    const handlePesoChange = (e:any) => {
-        let value = e.target.value.replace(/[^\d,]/g, ''); // Permite apenas números e ponto
-        if (value.includes(',')) {
-            const parts = value.split(',');
-            value = `${parts[0]},${parts[1].slice(0, 2)}`; // Limita a 2 casas decimais
-        }
-        setPeso(value);
+    const [error, setError] = useState('');
+
+    const handlePesoChange = (e: any) => {
+        let value = e.target.value;
+        value = value.replace(',', '.'); 
+        setPeso(parseFloat(value)); 
     };
 
-    const handleAlturaChange = (e:any) => {
-        let value = e.target.value.replace(/[^\d,]/g, ''); // Permite apenas números e ponto
-        if (value.includes(',')) {
-            const parts = value.split(',');
-            value = `${parts[0]},${parts[1].slice(0, 2)}`; // Limita a 2 casas decimais
-        }
-        setAltura(value);
+    const handleAlturaChange = (e: any) => {
+        let value = e.target.value;
+        value = value.replace(',', '.'); 
+        setAltura(parseFloat(value)); 
     };
+
+    const handleSubmit = async (e: any) => {
+        e.preventDefault();
+
+        if (password !== confirmPassword) {
+            alert('As senhas devem ser iguais.');
+            return;
+        }
+        try {
+            const response = await fetch('http://localhost:3000/users', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    name: name, 
+                    username: email, 
+                    password: password, 
+                    peso: peso, 
+                    altura: altura, 
+                    termos: termos, 
+                })   
+            });
+
+            if(!response.ok){
+                const responseData = await response.json();
+                setError(responseData.message || 'Ocorreu um erro ao processar sua solicitação.');
+                window.alert(error);
+                return;
+            }
+
+            setName('');
+            setEmail('');
+            setPassword('');
+            setConfirmPassword('');
+            setPeso(null);
+            setAltura(null);
+            setTermos(false);
+
+            window.alert('usuário cadastrado com sucesso!');
+            console.log(response);
+
+        } catch (error) {
+            setError('Erro na autenticação. Verifique suas credenciais.')
+            console.error(error);
+        }
+    
+    }
 
     return (
         <div className="flex flex-col items-center justify-start h-screen w-screen py-6 gap-10">
-            <h1 className="text-7xl lg:ml-[15rem] font-bold leading-tight text-[#844c81]">Cadastre-se</h1>
-            <form className="flex flex-col lg:ml-[15rem] w-1/2 items-start justify-center px-6 py-10 bg-white rounded-xl shadow-lg border gap-6">
+            <h1 className="text-7xl font-bold leading-tight text-[#844c81]">Cadastre-se</h1>
+            <form onSubmit={handleSubmit} className="flex flex-col w-1/2 items-start justify-center px-6 py-10 bg-white rounded-xl shadow-lg border gap-6">
                 <div className="grid grid-cols-2 pl-8 w-full">
                     <div className="flex flex-col w-2/3">
                         <label className="mb-2 text-xl font-medium">Nome <a className="text-red-500">*</a></label>
@@ -81,21 +125,21 @@ const Cadastro = () => {
                     <div className="flex flex-col w-2/3">
                         <label className="mb-2 text-xl font-medium">Peso (kg) <a className="text-red-500">*</a></label>
                         <input 
-                            type="text" 
+                            type="number" 
                             name="peso" 
                             required
-                            value={peso}
+                            value={peso || ''}
                             onChange={handlePesoChange} 
                             className="bg-[#edddee] rounded focus:outline-[#844c81] p-1" />
                     </div>
                     <div className="flex flex-col w-2/3">
                         <label className="mb-2 text-xl font-medium">Altura (m) <a className="text-red-500">*</a></label>
                         <input 
-                            type="text" 
+                            type="number" 
                             name="altura" 
-                            value={altura}
-                            onChange={handleAlturaChange}
                             required 
+                            value={altura || ''}
+                            onChange={handleAlturaChange}
                             className="bg-[#edddee] rounded focus:outline-[#844c81] p-1" />
                     </div>
                 </div>
