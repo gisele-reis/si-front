@@ -1,5 +1,5 @@
 export default interface IAuthContextType {
-    isAuthenticated: boolean;
-    login: ({ token, email }: { token: string, email: string }) => void;
-    logout: () => void;
+  isAuthenticated: boolean;
+  login: ({ token, username }: { token: string; username: string }) => void;
+  logout: () => void;
 }
