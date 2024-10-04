@@ -85,7 +85,7 @@ const Cadastro = () => {
                             value={name}
                             onChange={(e) => setName(e.target.value)} 
                             required 
-                            className="bg-[#edddee] rounded focus:outline-[#844c81] p-1" 
+                            className="bg-[#eeeeee] shadow-smªª rounded focus:outline-[#844c81] p-1" 
                         />
                     </div>
                     <div className="flex flex-col w-2/3">
@@ -96,7 +96,7 @@ const Cadastro = () => {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)} 
                             required 
-                            className="bg-[#edddee] rounded focus:outline-[#844c81] p-1" />
+                            className="bg-[#eeeeee] shadow-smªª rounded focus:outline-[#844c81] p-1" />
                     </div>
                 </div>
                 <div className="grid grid-cols-2 pl-8 w-full">
@@ -108,7 +108,7 @@ const Cadastro = () => {
                             required
                             value={password}
                             onChange={(e) => setPassword(e.target.value)} 
-                            className="bg-[#edddee] rounded focus:outline-[#844c81] p-1" />
+                            className="bg-[#eeeeee] shadow-smªª rounded focus:outline-[#844c81] p-1" />
                     </div>
                     <div className="flex flex-col w-2/3">
                         <label className="mb-2 text-xl font-medium">Repita a Senha <a className="text-red-500">*</a></label>
@@ -118,7 +118,7 @@ const Cadastro = () => {
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
                             required 
-                            className="bg-[#edddee] rounded focus:outline-[#844c81] p-1" />
+                            className="bg-[#eeeeee] shadow-smªª rounded focus:outline-[#844c81] p-1" />
                     </div>
                 </div>
                 <div className="grid grid-cols-2 pl-8 w-full">
@@ -130,7 +130,7 @@ const Cadastro = () => {
                             required
                             value={peso || ''}
                             onChange={handlePesoChange} 
-                            className="bg-[#edddee] rounded focus:outline-[#844c81] p-1" />
+                            className="bg-[#eeeeee] shadow-smªª rounded focus:outline-[#844c81] p-1" />
                     </div>
                     <div className="flex flex-col w-2/3">
                         <label className="mb-2 text-xl font-medium">Altura (m) <a className="text-red-500">*</a></label>
@@ -140,7 +140,7 @@ const Cadastro = () => {
                             required 
                             value={altura || ''}
                             onChange={handleAlturaChange}
-                            className="bg-[#edddee] rounded focus:outline-[#844c81] p-1" />
+                            className="bg-[#eeeeee] shadow-smªª rounded focus:outline-[#844c81] p-1" />
                     </div>
                 </div>
                 <div className="flex gap-2 pl-8 w-full">

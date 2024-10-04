@@ -42,7 +42,7 @@ const Login = () => {
             <div className="flex flex-col w-full gap-6">
               <input
                 type="username"
-                className="bg-[#edddee] h-[44px] p-2 w-full text-xs rounded placeholder:text-[#404040] placeholder:text-sm focus:outline-[#844c81]"
+                className="bg-[#eeeeee] shadow-sm h-[44px] p-2 w-full text-xs rounded placeholder:text-[#404040] placeholder:text-sm focus:outline-[#844c81]"
                 placeholder="Insira seu e-mail"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
@@ -50,7 +50,7 @@ const Login = () => {
               />
               <input
                 type="password"
-                className="bg-[#edddee] h-[44px] p-2 w-full text-xs rounded placeholder:text-[#404040] placeholder:text-sm focus:outline-[#844c81]"
+                className="bg-[#eeeeee] shadow-sm h-[44px] p-2 w-full text-xs rounded placeholder:text-[#404040] placeholder:text-sm focus:outline-[#844c81]"
                 placeholder="Insira sua senha"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
