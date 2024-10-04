@@ -57,6 +57,7 @@ const Perfil = () => {
   const handleCancelar = () => {
     setCancelar(true);
     setEditar(false);
+    window.location.reload();
   }
 
   const handleSalvar = async () => {
@@ -66,48 +67,48 @@ const Perfil = () => {
     if (!isNaN(pesoNumerico) && !isNaN(alturaNumerica)) {
       try{
         const token = localStorage.getItem("token");
-    console.log(token);
-    if (token) {
-      const parts = token.split(".");
-      if (parts.length !== 3) {
-        console.error("Token JWT malformado");
-        return;
-      }
+        console.log(token);
+        if (token) {
+          const parts = token.split(".");
+          if (parts.length !== 3) {
+            console.error("Token JWT malformado");
+            return;
+          }
 
-      const payload = parts[1];
-      try {
-        const decoded = JSON.parse(atob(payload));
-        const userId = decoded.sub;
+          const payload = parts[1];
+          try {
+            const decoded = JSON.parse(atob(payload));
+            const userId = decoded.sub;
 
-        const response = await fetch(`http://localhost:3000/users/${userId}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-          body: JSON.stringify({ 
-            name: data.name,
-            username: data.username,
-            peso: parseFloat(data.peso.replace(",", ".")),
-            altura: parseFloat(data.altura.replace(",", ".")),
-          }) 
-        });
+            const response = await fetch(`http://localhost:3000/users/${userId}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify({ 
+              name: data.name,
+              username: data.username,
+              peso: parseFloat(data.peso.replace(",", ".")),
+              altura: parseFloat(data.altura.replace(",", ".")),
+            }) 
+            });
         
-        if (response.ok) {
-          const responseData = await response.json();
-          console.log("Dados atualizados:", responseData);
-          alert("Informações atualizadas com sucesso!");
-          window.location.reload();
-        } else {
-          const responseData = await response.json();
-          console.error("Erro ao atualizar os dados:", responseData);
-          alert("Erro ao atualizar os dados. Por favor, tente novamente.");
-          window.location.reload();
-        }
-      } catch (error) {
-        console.error("Erro ao decodificar o token", error);
-      }
-    }  
+            if (response.ok) {
+              const responseData = await response.json();
+              console.log("Dados atualizados:", responseData);
+              alert("Informações atualizadas com sucesso!");
+              window.location.reload();
+            } else {
+              const responseData = await response.json();
+              console.error("Erro ao atualizar os dados:", responseData);
+              alert("Erro ao atualizar os dados. Por favor, tente novamente.");
+              window.location.reload();
+            }
+          } catch (error) {
+            console.error("Erro ao decodificar o token", error);
+          }   
+        }  
       } catch(error){
         console.log(error);
         setError("Erro ao alterar informações");
@@ -115,6 +116,70 @@ const Perfil = () => {
       }
     } else {
       alert("Valores inválidos para peso ou altura.");
+    }
+  };
+
+
+  const handleDelete = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (token) {
+        const parts = token.split(".");
+        if (parts.length !== 3) {
+          console.error("Token JWT malformado");
+          return;
+        }
+        const payload = parts[1];
+        if (window.confirm("Tem certeza que deseja excluir seu dados?")) {
+          try {
+            const decoded = JSON.parse(atob(payload));
+            const userId = decoded.sub;
+            const response = await fetch(`http://localhost:3000/users/${userId}`, {
+              method: 'DELETE',
+              headers: {
+                'Authorization': `Bearer ${token}`,
+              },
+            });
+            if (response.ok) {
+              const responseData = await response.json();
+              console.log("Dados excluídos:", responseData);
+              alert("Informações excluídas com sucesso!");
+              localStorage.removeItem("token");
+              localStorage.removeItem("username");
+              window.location.reload();
+  
+            } else {
+              const responseData = await response.json();
+              console.error("Erro ao excluir os dados:", responseData);
+              alert("Erro ao excluir os dados. Por favor, tente novamente.");
+              window.location.reload();
+            }
+  
+          }catch(error){
+            console.error("Erro ao decodificar o token", error);
+          }
+
+        } else return null;
+      }   
+    } catch (error) {
+      console.log(error);
+      setError("Erro ao excluir dados");
+      window.alert(erro);
+    }
+  }
+
+
+  const handlePesoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value.replace(',', '.'); 
+    if (/^\d*\.?\d{0,2}$/.test(value)) {
+      setData({ ...data, peso: value });
+    }
+  };
+  
+  const handleAlturaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value.replace(',', '.'); 
+    if (/^\d*\.?\d{0,2}$/.test(value)) {
+      setData({ ...data, altura: value });
     }
   };
 
@@ -152,20 +217,17 @@ const Perfil = () => {
               disabled={!editar}
               value={data.peso}
               className="bg-[#edddee] p-1 focus:outline-[#844c81]"
-              onChange={(e) =>
-                setData({ ...data, peso: e.target.value.replace(",", ".") })
-              }
+              onChange={handlePesoChange} 
             />
           </div>
+
           <div className="flex gap-4">
             <h1 className="font-bold leading-tight">Altura:</h1>
             <input
               disabled={!editar}
               value={data.altura}
               className="bg-[#edddee] p-1 focus:outline-[#844c81]"
-              onChange={(e) =>
-                setData({ ...data, altura: e.target.value.replace(",", ".") })
-              }
+              onChange={handleAlturaChange}
             />
           </div>
         </div>
@@ -183,7 +245,10 @@ const Perfil = () => {
           >
             {!editar ? "Editar" : "Cancelar"}
           </button>
-          <button className="bg-[#844c81] text-[#edddee] px-4 py-2 rounded-lg mt-8">
+          <button 
+            onClick={handleDelete} 
+            className="bg-[#844c81] text-[#edddee] px-4 py-2 rounded-lg mt-8"
+          >
             Excluir Conta
           </button>
         </div>
