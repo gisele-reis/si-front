@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Modal from "../components/Modal";
 
 const Cadastro = () => {
 
@@ -11,6 +12,8 @@ const Cadastro = () => {
     const [termos, setTermos] = useState(false);
 
     const [error, setError] = useState('');
+
+    const[openModalTerms, setOpenModalTerms] = useState(false);
 
     const handlePesoChange = (e: any) => {
         let value = e.target.value;
@@ -73,7 +76,7 @@ const Cadastro = () => {
     }
 
     return (
-        <div className="flex flex-col items-center justify-start h-screen w-screen py-6 gap-10">
+        <div className="flex flex-col items-center justify-start h-screen w-screen py-6 gap-10 bg-[#F2F2F2]">
             <h1 className="text-7xl font-bold leading-tight text-[#844c81]">Cadastre-se</h1>
             <form onSubmit={handleSubmit} className="flex flex-col w-1/2 items-start justify-center px-6 py-10 bg-white rounded-xl shadow-lg border gap-6">
                 <div className="grid grid-cols-2 pl-8 w-full">
@@ -145,7 +148,8 @@ const Cadastro = () => {
                 </div>
                 <div className="flex gap-2 pl-8 w-full">
                     <input required type="checkbox" id="termos" onChange={(e) => setTermos(e.target.checked)} name="termos" className="" />
-                    <label className="">Aceito os termos de uso</label>
+                    <label className="">Aceito os <button type="button" onClick={() => setOpenModalTerms(true)} className="text-[#844c81] font-bold">termos de uso</button></label>
+                    <Modal onClose={() => setOpenModalTerms(false)} isOpen={openModalTerms}/>
                 </div>
                 <div className="flex flex-col w-full items-center gap-2">
                     <button 
