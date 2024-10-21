@@ -1,6 +1,8 @@
 import { useState } from "react";
 import useAuth from "../hooks/useAuth";
 import axios from "axios";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faLock, faUser } from "@fortawesome/free-solid-svg-icons";
 
 const Login = () => {
   const { login } = useAuth();
@@ -40,32 +42,38 @@ const Login = () => {
             className="flex flex-col w-full items-center justify-between gap-8 px-4"
           >
             <div className="flex flex-col w-full gap-6">
-              <input
-                type="username"
-                className="bg-[#eeeeee] shadow-sm h-[44px] p-2 w-full text-xs rounded placeholder:text-[#404040] placeholder:text-sm focus:outline-[#844c81]"
-                placeholder="Insira seu e-mail"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-              />
-              <input
-                type="password"
-                className="bg-[#eeeeee] shadow-sm h-[44px] p-2 w-full text-xs rounded placeholder:text-[#404040] placeholder:text-sm focus:outline-[#844c81]"
-                placeholder="Insira sua senha"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
+              <div className="flex flex-row items-center gap-4 bg-[#eeeeee] shadow-sm w-full px-5 py-2 rounded">
+                <FontAwesomeIcon icon={faUser} />
+                <input
+                  type="username"
+                  className="h-[38px] bg-[#eeeeee] w-full text-xs  placeholder:text-[#404040] placeholder:text-sm focus:outline-none"
+                  placeholder="E-mail"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="flex flex-row items-center gap-4 bg-[#eeeeee] shadow-sm w-full px-5 py-2 rounded">
+                <FontAwesomeIcon icon={faLock} />
+                <input
+                  type="password"
+                  className="h-[38px] bg-[#eeeeee] w-full text-xs  placeholder:text-[#404040] placeholder:text-sm focus:outline-none"
+                  placeholder="Senha"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
             </div>
             {error && <p className="text-red-500">{error}</p>}
             <div className="flex flex-col w-full items-center gap-2">
               <button
                 type="submit"
-                className="bg-[#844c81] h-[40px] w-[150px] font-semibold rounded-[10px] hover:bg-[#bd80b8] transition duration-300 text-white"
+                className="bg-[#844c81] h-[40px] w-[100%] font-semibold rounded-[10px] hover:bg-[#bd80b8] transition duration-300 text-white"
               >
                 Entrar
               </button>
-              <span className="text-[15px]">
+              <span className="text-[15px] mt-4">
                 Ainda não possui uma conta?{" "}
                 <a href="/cadastro" className="text-[#844c81] font-bold">
                   Cadastre-se

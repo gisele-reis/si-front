@@ -7,14 +7,17 @@ const Perfil = () => {
     username: string;
     peso: string;
     altura: string;
+    photoUrl: string;
   }>({
     name: "",
     username: "",
     peso: "",
     altura: "",
+    photoUrl: "",
   });
 
   const [erro, setError] = useState("");
+  const [fotoPerfil, setFotoPerfil] = useState<File | null>(null);
 
   const fetchData = async () => {
     try {
@@ -46,8 +49,8 @@ const Perfil = () => {
     fetchData();
   }, []);
 
-  const [ editar, setEditar ] = useState(false);
-  const [ cancelar, setCancelar ] = useState(true);
+  const [editar, setEditar] = useState(false);
+  const [cancelar, setCancelar] = useState(true);
 
   const handleEditar = () => {
     setEditar(true);
@@ -58,14 +61,14 @@ const Perfil = () => {
     setCancelar(true);
     setEditar(false);
     window.location.reload();
-  }
+  };
 
   const handleSalvar = async () => {
     const pesoNumerico = parseFloat(data.peso.replace(",", "."));
     const alturaNumerica = parseFloat(data.altura.replace(",", "."));
 
     if (!isNaN(pesoNumerico) && !isNaN(alturaNumerica)) {
-      try{
+      try {
         const token = localStorage.getItem("token");
         console.log(token);
         if (token) {
@@ -80,20 +83,23 @@ const Perfil = () => {
             const decoded = JSON.parse(atob(payload));
             const userId = decoded.sub;
 
-            const response = await fetch(`http://localhost:3000/users/${userId}`, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`,
-            },
-            body: JSON.stringify({ 
-              name: data.name,
-              username: data.username,
-              peso: parseFloat(data.peso.replace(",", ".")),
-              altura: parseFloat(data.altura.replace(",", ".")),
-            }) 
-            });
-        
+            const response = await fetch(
+              `http://localhost:3000/users/${userId}`,
+              {
+                method: "PUT",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                  name: data.name,
+                  username: data.username,
+                  peso: parseFloat(data.peso.replace(",", ".")),
+                  altura: parseFloat(data.altura.replace(",", ".")),
+                }),
+              }
+            );
+
             if (response.ok) {
               const responseData = await response.json();
               console.log("Dados atualizados:", responseData);
@@ -107,9 +113,9 @@ const Perfil = () => {
             }
           } catch (error) {
             console.error("Erro ao decodificar o token", error);
-          }   
-        }  
-      } catch(error){
+          }
+        }
+      } catch (error) {
         console.log(error);
         setError("Erro ao alterar informações");
         window.alert(erro);
@@ -118,7 +124,6 @@ const Perfil = () => {
       alert("Valores inválidos para peso ou altura.");
     }
   };
-
 
   const handleDelete = async () => {
     try {
@@ -134,12 +139,15 @@ const Perfil = () => {
           try {
             const decoded = JSON.parse(atob(payload));
             const userId = decoded.sub;
-            const response = await fetch(`http://localhost:3000/users/${userId}`, {
-              method: 'DELETE',
-              headers: {
-                'Authorization': `Bearer ${token}`,
-              },
-            });
+            const response = await fetch(
+              `http://localhost:3000/users/${userId}`,
+              {
+                method: "DELETE",
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            );
             if (response.ok) {
               const responseData = await response.json();
               console.log("Dados excluídos:", responseData);
@@ -147,91 +155,158 @@ const Perfil = () => {
               localStorage.removeItem("token");
               localStorage.removeItem("username");
               window.location.reload();
-  
             } else {
               const responseData = await response.json();
               console.error("Erro ao excluir os dados:", responseData);
               alert("Erro ao excluir os dados. Por favor, tente novamente.");
               window.location.reload();
             }
-  
-          }catch(error){
+          } catch (error) {
             console.error("Erro ao decodificar o token", error);
           }
-
         } else return null;
-      }   
+      }
     } catch (error) {
       console.log(error);
       setError("Erro ao excluir dados");
       window.alert(erro);
     }
-  }
-
+  };
 
   const handlePesoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value.replace(',', '.'); 
+    let value = e.target.value.replace(",", ".");
     if (/^\d*\.?\d{0,2}$/.test(value)) {
       setData({ ...data, peso: value });
     }
   };
-  
+
   const handleAlturaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value.replace(',', '.'); 
+    let value = e.target.value.replace(",", ".");
     if (/^\d*\.?\d{0,2}$/.test(value)) {
       setData({ ...data, altura: value });
     }
   };
 
+  const handleUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) {
+      const file = event.target.files[0];
+      setFotoPerfil(file);
+      const imageUrl = URL.createObjectURL(file);
+      setData((prevData) => ({ ...prevData, photoUrl: imageUrl }));
+    }
+  };
+
+  const handleSavePhoto = async () => {
+    if (!fotoPerfil) return;
+
+    const formData = new FormData();
+    formData.append("file", fotoPerfil);
+
+    try {
+      const token = localStorage.getItem("token");
+      if (token) {
+        const parts = token.split(".");
+        if (parts.length !== 3) {
+          console.error("Token JWT malformado");
+          return;
+        }
+
+        const payload = parts[1];
+        const decoded = JSON.parse(atob(payload));
+        const userId = decoded.sub;
+
+        const response = await axios.post(
+          `http://localhost:3000/users/${userId}/upload-photo`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        console.log("Foto de perfil atualizada com sucesso!", response.data);
+        alert("Foto de perfil atualizada com sucesso!");
+        fetchData();
+      }
+    } catch (error) {
+      console.error("Erro ao atualizar a foto de perfil:", error);
+      alert("Erro ao atualizar a foto de perfil. Tente novamente.");
+    }
+  };
+
   return (
     <div className="flex items-center min-h-screen bg-[#F2F2F2]">
-      <div className="grid w-full h-screen lg:ml-[15rem]">
+      <div className="flex flex-col gap-5 h-screen lg:ml-[15rem] w-full ">
         <div className="justify-items-start mt-8 ml-8">
           <h1 className="text-4xl font-bold leading-tight text-[#844c81]">
             Minhas Informações
           </h1>
         </div>
-        <div className="flex flex-col gap-4 place-self-center">
-          <div className="flex gap-4">
-            <h1 className="font-bold leading-tight">Nome:</h1>
-            <input
-              disabled={!editar}
-              value={data.name}
-              required={editar}
-              className="bg-[#edddee] p-1 focus:outline-[#844c81]"
-              onChange={(e) => setData({ ...data, name: e.target.value })}
-            />
+
+        <div className="flex gap-8 ml-8 mt-4">
+          <div className="flex flex-row gap-8 items-center">
+            <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-[#844c81]">
+              <img
+                src={data.photoUrl || "/path/to/default/image.png"}
+                alt="Foto de Perfil"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <div className="flex flex-row items-center gap-2">
+                <h2 className="text-2xl font-bold"> {data.name}</h2>
+              </div>
+              <div className="flex flex-row items-center gap-2">
+                <p className="font-medium ">Email:</p>
+                <p className="">{data.username}</p>
+              </div>
+            </div>
           </div>
-          <div className="flex gap-4">
-            <h1 className="font-bold leading-tight ">E-mail:</h1>
-            <input
-              disabled={!editar}
-              value={data.username}
-              className="bg-[#edddee] p-1 focus:outline-[#844c81]"
-              onChange={(e) => setData({ ...data, username: e.target.value })}
-            />
-          </div>
-          <div className="flex gap-7">
-            <h1 className="font-bold leading-tight">Peso:</h1>
+        </div>
+        <hr className="ml-10 w-[80%]" />
+
+        <div className="flex flex-col gap-4 ml-8 mt-8">
+          <h3 className="text-2xl font-bold text-[#844c81]">
+            Informações pessoais
+          </h3>
+          <div className="flex gap-4 items-center">
+            <h1 className="font-bold">Peso:</h1>
             <input
               disabled={!editar}
               value={data.peso}
-              className="bg-[#edddee] p-1 focus:outline-[#844c81]"
-              onChange={handlePesoChange} 
+              className="text-xl"
+              onChange={handlePesoChange}
             />
           </div>
-
-          <div className="flex gap-4">
-            <h1 className="font-bold leading-tight">Altura:</h1>
+          <div className="flex gap-4 items-center">
+            <h1 className="font-bold">Altura:</h1>
             <input
               disabled={!editar}
               value={data.altura}
-              className="bg-[#edddee] p-1 focus:outline-[#844c81]"
+              className="text-xl focus:outline-[#844c81]"
               onChange={handleAlturaChange}
             />
           </div>
         </div>
-        <div className="flex gap-4 self-end justify-center mb-8">
+        <div className="flex gap-4 items-center ml-8">
+          <h1 className="font-bold">Foto de perfil:</h1>
+          <input type="file" accept="image/*" onChange={handleUpload} />
+        </div>
+        <button
+          onClick={handleSavePhoto}
+          className="bg-[#844c81] w-[20%] text-[#edddee] px-4 py-2 rounded-lg ml-8"
+        >
+          Inserir foto de perfil
+        </button>
+        <div className="flex gap-4 ml-10   mb-8">
+          <button
+            onClick={!editar ? handleEditar : handleCancelar}
+            className="bg-[#844c81] text-[#edddee] px-4 py-2 rounded-lg mt-8"
+          >
+            {!editar ? "Editar" : "Cancelar"}
+          </button>
           <button
             disabled={cancelar}
             onClick={handleSalvar}
@@ -240,13 +315,7 @@ const Perfil = () => {
             Salvar
           </button>
           <button
-            onClick={!editar ? handleEditar : handleCancelar}
-            className="bg-[#844c81] text-[#edddee] px-4 py-2 rounded-lg mt-8 disabled:opacity-50"
-          >
-            {!editar ? "Editar" : "Cancelar"}
-          </button>
-          <button 
-            onClick={handleDelete} 
+            onClick={handleDelete}
             className="bg-[#844c81] text-[#edddee] px-4 py-2 rounded-lg mt-8"
           >
             Excluir Conta
