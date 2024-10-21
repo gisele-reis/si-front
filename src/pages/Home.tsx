@@ -65,17 +65,21 @@ const Home = () => {
           </h1>
         </div>
         <div className="justify-items-start mt-8 ml-8">
-          <h1 className="text-2xl font-bold leading-tight text-[#844c81]">
+          <h1 className="text-4xl font-bold leading-tight text-[#844c81]">
             Cáculo de IMC
           </h1>
-          <div className="flex flex-col mt-4 gap-2">
+          <hr className="mt-2    w-[90%]" />
+
+          <div className="flex flex-col mt-6 gap-4">
             <div className="flex flex-row items-center gap-2">
-              <p className="font-medium text-[#844c81] ">Seu IMC é:</p>
-              <p className="">{imcRounded}</p>
+              <p className="font-medium text-[#844c81] text-2xl">Seu IMC é:</p>
+              <p className="text-2xl font-light">{imcRounded}</p>
             </div>
             <div className="flex flex-row items-center gap-2">
-              <p className="font-medium text-[#844c81]">Seu IMC está:</p>
-              <p className="">{imcCategory}</p>
+              <p className="font-medium text-[#844c81] text-2xl">
+                Seu IMC está:
+              </p>
+              <p className="text-2xl font-light">{imcCategory}</p>
             </div>
           </div>
         </div>
