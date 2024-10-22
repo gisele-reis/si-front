@@ -55,6 +55,8 @@ const Home = () => {
     return "Obesidade Grau III ou obesidade mórbida";
   };
 
+  const water = parseFloat(data.peso) * 35;
+
   const imcCategory = getIMCCategory(imc);
   return (
     <div className="flex items-center min-h-screen bg-[#F2F2F2]">
@@ -80,6 +82,12 @@ const Home = () => {
                 Seu IMC está:
               </p>
               <p className="text-2xl font-light">{imcCategory}</p>
+            </div>
+            <div className="flex flex-row items-center gap-2">
+              <p className="font-medium text-[#844c81] text-2xl">
+                Quantidade de água recomendada por dia:
+              </p>
+              <p className="text-2xl font-light">{water} ml</p>
             </div>
           </div>
         </div>
