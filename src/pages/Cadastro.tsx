@@ -22,9 +22,8 @@ const Cadastro = () => {
   };
 
   const handleAlturaChange = (e: any) => {
-    let value = e.target.value;
-    value = value.replace(",", ".");
-    setAltura(parseFloat(value));
+    const value = e.target.value.replace(/\D/g, ""); 
+    setAltura(value ? parseInt(value) : null);
   };
 
   const navigate = useNavigate();
@@ -89,7 +88,7 @@ const Cadastro = () => {
         className="flex flex-col w-1/2 items-start justify-center px-6 py-10 bg-white rounded-xl shadow-lg border gap-6"
       >
         <div className="grid grid-cols-2 pl-8 w-full">
-          <div className="flex flex-col w-2/3 w-[95%]">
+          <div className="flex flex-col w-[95%]">
             <label className="mb-2 text-xl font-medium">
               Nome <a className="text-red-500">*</a>
             </label>
@@ -102,7 +101,7 @@ const Cadastro = () => {
               className="bg-[#eeeeee] shadow-smªª rounded focus:outline-[#844c81] px-5 py-2"
             />
           </div>
-          <div className="flex flex-col w-2/3 w-[95%]">
+          <div className="flex flex-col w-[95%]">
             <label className="mb-2 text-xl font-medium">
               E-mail <a className="text-red-500">*</a>
             </label>
@@ -117,7 +116,7 @@ const Cadastro = () => {
           </div>
         </div>
         <div className="grid grid-cols-2 pl-8 w-full">
-          <div className="flex flex-col w-2/3 w-[95%]">
+          <div className="flex flex-col w-[95%]">
             <label className="mb-2 text-xl font-medium">
               Senha <a className="text-red-500">*</a>
             </label>
@@ -130,7 +129,7 @@ const Cadastro = () => {
               className="bg-[#eeeeee] shadow-smªª rounded focus:outline-[#844c81] px-5 py-2"
             />
           </div>
-          <div className="flex flex-col w-2/3 w-[95%]">
+          <div className="flex flex-col w-[95%]">
             <label className="mb-2 text-xl font-medium">
               Repita a Senha <a className="text-red-500">*</a>
             </label>
@@ -145,7 +144,7 @@ const Cadastro = () => {
           </div>
         </div>
         <div className="grid grid-cols-2 pl-8 w-full">
-          <div className="flex flex-col w-2/3 w-[95%]">
+          <div className="flex flex-col w-[95%]">
             <label className="mb-2 text-xl font-medium">
               Peso (kg) <a className="text-red-500">*</a>
             </label>
@@ -158,15 +157,16 @@ const Cadastro = () => {
               className="bg-[#eeeeee] shadow-smªª rounded focus:outline-[#844c81] px-5 py-2"
             />
           </div>
-          <div className="flex flex-col w-2/3 w-[95%]">
+          <div className="flex flex-col w-[95%]">
             <label className="mb-2 text-xl font-medium">
-              Altura (m) <a className="text-red-500">*</a>
+              Altura (cm) <a className="text-red-500">*</a>
             </label>
             <input
               type="number"
               name="altura"
               required
               value={altura || ""}
+              min = {0}
               onChange={handleAlturaChange}
               className="bg-[#eeeeee] shadow-smªª rounded focus:outline-[#844c81] px-5 py-2"
             />
