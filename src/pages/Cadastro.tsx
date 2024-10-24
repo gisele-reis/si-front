@@ -9,7 +9,8 @@ const Cadastro = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [peso, setPeso] = useState<number | null>();
   const [altura, setAltura] = useState<number | null>();
-  const [termos, setTermos] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState<string[]>([]);
+  const [modalOpened, setModalOpened] = useState(false);
 
   const [error, setError] = useState("");
 
@@ -22,7 +23,7 @@ const Cadastro = () => {
   };
 
   const handleAlturaChange = (e: any) => {
-    const value = e.target.value.replace(/\D/g, ""); 
+    const value = e.target.value.replace(/\D/g, "");
     setAltura(value ? parseInt(value) : null);
   };
 
@@ -36,7 +37,7 @@ const Cadastro = () => {
       return;
     }
     try {
-      const response = await fetch("http://localhost:3000/users", {
+      const response = await fetch("http://localhost:3000/users/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -47,7 +48,7 @@ const Cadastro = () => {
           password: password,
           peso: peso,
           altura: altura,
-          termos: termos,
+          acceptedTerms: acceptedTerms,
         }),
       });
 
@@ -67,15 +68,20 @@ const Cadastro = () => {
       setConfirmPassword("");
       setPeso(null);
       setAltura(null);
-      setTermos(false);
+      setAcceptedTerms([]);
 
-      window.alert("usuário cadastrado com sucesso!");
+      window.alert("Usuário cadastrado com sucesso!");
       console.log(response);
       navigate("/login");
     } catch (error) {
       setError("Erro na autenticação. Verifique suas credenciais.");
       console.error(error);
     }
+  };
+
+  const openTermsModal = () => {
+    setOpenModalTerms(true);
+    setModalOpened(true);
   };
 
   return (
@@ -85,7 +91,7 @@ const Cadastro = () => {
       </h1>
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col w-1/2 items-start justify-center px-6 py-10 bg-white rounded-xl shadow-lg border gap-6"
+        className="flex flex-col w-1/2 items-center justify-center px-6 py-10 bg-white rounded-xl shadow-lg border gap-6"
       >
         <div className="grid grid-cols-2 pl-8 w-full">
           <div className="flex flex-col w-[95%]">
@@ -98,7 +104,7 @@ const Cadastro = () => {
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
-              className="bg-[#eeeeee] shadow-smªª rounded focus:outline-[#844c81] px-5 py-2"
+              className="bg-[#eeeeee] shadow-sm rounded focus:outline-[#844c81] px-5 py-2"
             />
           </div>
           <div className="flex flex-col w-[95%]">
@@ -111,7 +117,7 @@ const Cadastro = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="bg-[#eeeeee] shadow-smªª rounded focus:outline-[#844c81] px-5 py-2"
+              className="bg-[#eeeeee] shadow-sm rounded focus:outline-[#844c81] px-5 py-2"
             />
           </div>
         </div>
@@ -126,92 +132,83 @@ const Cadastro = () => {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="bg-[#eeeeee] shadow-smªª rounded focus:outline-[#844c81] px-5 py-2"
+              className="bg-[#eeeeee] shadow-sm rounded focus:outline-[#844c81] px-5 py-2"
             />
           </div>
           <div className="flex flex-col w-[95%]">
             <label className="mb-2 text-xl font-medium">
-              Repita a Senha <a className="text-red-500">*</a>
+              Confirmar Senha <a className="text-red-500">*</a>
             </label>
             <input
               type="password"
-              name="senha2"
+              name="confirmPassword"
+              required
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-              className="bg-[#eeeeee] shadow-smªª rounded focus:outline-[#844c81] px-5 py-2"
+              className="bg-[#eeeeee] shadow-sm rounded focus:outline-[#844c81] px-5 py-2"
             />
           </div>
         </div>
         <div className="grid grid-cols-2 pl-8 w-full">
           <div className="flex flex-col w-[95%]">
             <label className="mb-2 text-xl font-medium">
-              Peso (kg) <a className="text-red-500">*</a>
+              Peso <a className="text-red-500">*</a>
             </label>
             <input
-              type="number"
+              type="text"
               name="peso"
               required
               value={peso || ""}
               onChange={handlePesoChange}
-              className="bg-[#eeeeee] shadow-smªª rounded focus:outline-[#844c81] px-5 py-2"
+              className="bg-[#eeeeee] shadow-sm rounded focus:outline-[#844c81] px-5 py-2"
             />
           </div>
           <div className="flex flex-col w-[95%]">
             <label className="mb-2 text-xl font-medium">
-              Altura (cm) <a className="text-red-500">*</a>
+              Altura <a className="text-red-500">*</a>
             </label>
             <input
-              type="number"
+              type="text"
               name="altura"
               required
               value={altura || ""}
-              min = {0}
               onChange={handleAlturaChange}
-              className="bg-[#eeeeee] shadow-smªª rounded focus:outline-[#844c81] px-5 py-2"
+              className="bg-[#eeeeee] shadow-sm rounded focus:outline-[#844c81] px-5 py-2"
             />
           </div>
         </div>
-        <div className="flex gap-2 pl-8 w-full">
-          <input
-            required
-            type="checkbox"
-            id="termos"
-            onChange={(e) => setTermos(e.target.checked)}
-            name="termos"
-            className=""
-          />
+        <div className="flex gap-2 pl-8 w-full" onClick={openTermsModal}>
           <label className="">
-            Aceito os{" "}
+            Para continuar você deve aceitar os{" "}
             <button
               type="button"
-              onClick={() => setOpenModalTerms(true)}
+              onClick={openTermsModal}
               className="text-[#844c81] font-bold"
             >
               Termos de uso
             </button>
           </label>
-          <Modal
-            onClose={() => setOpenModalTerms(false)}
-            isOpen={openModalTerms}
-          />
         </div>
-        <div className="flex flex-col w-full items-center gap-2">
-          <button
-            type="submit"
-            disabled={!termos}
-            className="bg-[#844c81] h-[40px] w-[300px] font-semibold rounded-[10px] hover:bg-[#bd80b8] transition duration-300 text-white disabled:opacity-50"
-          >
-            Cadastrar
-          </button>
-          <span className="text-[15px]">
-            Já possui uma conta?{" "}
-            <a href="/login" className="text-[#844c81] font-bold">
-              Entrar
-            </a>
-          </span>
-        </div>
+        <button
+          type="submit"
+          className="bg-[#844c81] py-2 px-10 font-semibold rounded-[10px] hover:bg-[#bd80b8] transition duration-300 text-white w-[60%] disabled:opacity-50"
+          disabled={!modalOpened}
+        >
+          Cadastrar
+        </button>
+        {error && <p className="text-red-500">{error}</p>}
+        <span className="text-[15px]">
+          Já possui uma conta?{" "}
+          <a href="/login" className="text-[#844c81] font-bold">
+            Entrar
+          </a>
+        </span>
       </form>
+      <Modal
+        isOpen={openModalTerms}
+        onClose={() => setOpenModalTerms(false)}
+        setTermsAccepted={setAcceptedTerms}
+      />
     </div>
   );
 };
