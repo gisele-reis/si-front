@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Modal from "../components/Modal";
 import { useNavigate } from "react-router-dom";
 
@@ -11,10 +11,29 @@ const Cadastro = () => {
   const [altura, setAltura] = useState<number | null>();
   const [acceptedTerms, setAcceptedTerms] = useState<string[]>([]);
   const [modalOpened, setModalOpened] = useState(false);
-
+  const [modalTermDetails, setModalTermDetails] = useState("");
   const [error, setError] = useState("");
+  const [terms, setTerms] = useState<Term[]>([]);
 
-  const [openModalTerms, setOpenModalTerms] = useState(false);
+
+  const navigate = useNavigate();
+
+  interface Term {
+    id: string;
+    description: string;
+    details: string;
+    isMandatory: boolean;
+  }
+
+  useEffect(() => {
+    const fetchTerms = async () => {
+      const response = await fetch("http://localhost:3000/terms");
+      const data = await response.json();
+      setTerms(data);
+    };
+
+    fetchTerms();
+  }, []);
 
   const handlePesoChange = (e: any) => {
     let value = e.target.value;
@@ -26,8 +45,6 @@ const Cadastro = () => {
     const value = e.target.value.replace(/\D/g, "");
     setAltura(value ? parseInt(value) : null);
   };
-
-  const navigate = useNavigate();
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
@@ -56,7 +73,7 @@ const Cadastro = () => {
         const responseData = await response.json();
         setError(
           responseData.message ||
-            "Ocorreu um erro ao processar sua solicitação."
+          "Ocorreu um erro ao processar sua solicitação."
         );
         window.alert(error);
         return;
@@ -71,7 +88,6 @@ const Cadastro = () => {
       setAcceptedTerms([]);
 
       window.alert("Usuário cadastrado com sucesso!");
-      console.log(response);
       navigate("/login");
     } catch (error) {
       setError("Erro na autenticação. Verifique suas credenciais.");
@@ -79,8 +95,16 @@ const Cadastro = () => {
     }
   };
 
-  const openTermsModal = () => {
-    setOpenModalTerms(true);
+  const handleTermChange = (termId: string) => {
+    setAcceptedTerms((prev) =>
+      prev.includes(termId)
+        ? prev.filter((id) => id !== termId)
+        : [...prev, termId]
+    );
+  };
+
+  const openTermsModal = (termDetails: string) => {
+    setModalTermDetails(termDetails);
     setModalOpened(true);
   };
 
@@ -177,22 +201,33 @@ const Cadastro = () => {
             />
           </div>
         </div>
-        <div className="flex gap-2 pl-8 w-full" onClick={openTermsModal}>
-          <label className="">
-            Para continuar você deve aceitar os{" "}
-            <button
-              type="button"
-              onClick={openTermsModal}
-              className="text-[#844c81] font-bold"
-            >
-              Termos de uso
-            </button>
-          </label>
+        <div className="pl-8 w-full">
+          {terms.map((term) => (
+            <div key={term.id} className="flex items-center gap-2 mb-2">
+              <input
+                type="checkbox"
+                id={`term-${term.id}`}
+                checked={acceptedTerms.includes(term.id)}
+                onChange={() => handleTermChange(term.id)}
+                required={term.isMandatory}
+              />
+              <label htmlFor={`term-${term.id}`} className="flex items-center">
+                {term.description}
+                {!term.isMandatory && <span className="text-gray-500 ml-1">(opcional)</span>}
+                <button
+                  type="button"
+                  onClick={() => openTermsModal(term.details)}
+                  className="text-[#844c81] ml-1 font-bold"
+                >
+                  Mais informações
+                </button>
+              </label>
+            </div>
+          ))}
         </div>
         <button
           type="submit"
-          className="bg-[#844c81] py-2 px-10 font-semibold rounded-[10px] hover:bg-[#bd80b8] transition duration-300 text-white w-[60%] disabled:opacity-50"
-          disabled={!modalOpened}
+          className="bg-[#844c81] py-2 px-10 font-semibold rounded-[10px] hover:bg-[#bd80b8] transition duration-300 text-white w-[60%]"
         >
           Cadastrar
         </button>
@@ -205,9 +240,9 @@ const Cadastro = () => {
         </span>
       </form>
       <Modal
-        isOpen={openModalTerms}
-        onClose={() => setOpenModalTerms(false)}
-        setTermsAccepted={setAcceptedTerms}
+        isOpen={modalOpened}
+        onClose={() => setModalOpened(false)}
+        details={modalTermDetails}
       />
     </div>
   );
