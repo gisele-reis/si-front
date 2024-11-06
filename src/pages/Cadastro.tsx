@@ -15,7 +15,6 @@ const Cadastro = () => {
   const [error, setError] = useState("");
   const [terms, setTerms] = useState<Term[]>([]);
 
-
   const navigate = useNavigate();
 
   interface Term {
@@ -73,7 +72,7 @@ const Cadastro = () => {
         const responseData = await response.json();
         setError(
           responseData.message ||
-          "Ocorreu um erro ao processar sua solicitação."
+            "Ocorreu um erro ao processar sua solicitação."
         );
         window.alert(error);
         return;
@@ -109,14 +108,12 @@ const Cadastro = () => {
   };
 
   return (
-    <div className="flex items-center flex-col justify-center min-h-screen h-screen w-screen py-6 gap-10 bg-[#F2F2F2]">
-      <h1 className="text-7xl font-bold leading-tight text-[#844c81]">
-        Cadastre-se
-      </h1>
+    <div className="flex items-center flex-col justify-center py-6 gap-10 bg-[#F2F2F2] min-h-screen">
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col w-1/2 items-center justify-center px-6 py-10 bg-white rounded-xl shadow-lg border gap-6"
+        className="flex flex-col w-[80%] items-center justify-center px-2 py-4 bg-white rounded-xl shadow-lg border gap-6"
       >
+        <h1 className="text-4xl font-bold  text-[#844c81]">Cadastre-se</h1>
         <div className="grid grid-cols-2 pl-8 w-full">
           <div className="flex flex-col w-[95%]">
             <label className="mb-2 text-xl font-medium">
@@ -213,7 +210,9 @@ const Cadastro = () => {
               />
               <label htmlFor={`term-${term.id}`} className="flex items-center">
                 {term.description}
-                {!term.isMandatory && <span className="text-gray-500 ml-1">(opcional)</span>}
+                {!term.isMandatory && (
+                  <span className="text-gray-500 ml-1">(opcional)</span>
+                )}
                 <button
                   type="button"
                   onClick={() => openTermsModal(term.details)}
