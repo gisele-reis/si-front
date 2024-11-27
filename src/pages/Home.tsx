@@ -107,7 +107,6 @@ const Home = () => {
         setPendingTerms((prevTerms) => {
           const updatedTerms = prevTerms.filter((term) => term.id !== termId);
 
-          // Fecha o modal principal se não houver mais termos pendentes
           if (updatedTerms.length === 0) {
             handleCloseModal();
           }
@@ -287,11 +286,6 @@ const Home = () => {
         </div>
       )}
 
-      <Modal
-        isOpen={isDetailModalOpen}
-        onClose={handleCloseDetailModal}
-        details={detailModalContent}
-      />
     </div>
   );
 };
