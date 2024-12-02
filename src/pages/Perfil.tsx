@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import Modal from "../components/Modal";
 
 const Perfil = () => {
   const [data, setData] = useState<{
@@ -15,9 +16,24 @@ const Perfil = () => {
     altura: "",
     photoUrl: "",
   });
+  interface Term {
+    id: string;
+    title: string;
+    description: string;
+    items: ConsentItem[];
+  }
 
+  interface ConsentItem {
+    id: string;
+    description: string;
+    isMandatory: boolean;
+  }
   const [erro, setError] = useState("");
   const [fotoPerfil, setFotoPerfil] = useState<File | null>(null);
+  const [acceptedTerms, setAcceptedTerms] = useState<string[]>([]); // Agora vai armazenar os IDs dos itens aceitos
+  const [modalOpened, setModalOpened] = useState(false);
+  const [modalTermDetails, setModalTermDetails] = useState<any>(null);
+  const [terms, setTerms] = useState<Term[]>([]);
 
   const fetchData = async () => {
     try {
@@ -48,6 +64,50 @@ const Perfil = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    const fetchTerms = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/terms");
+        if (response.ok) {
+          const data = await response.json();
+          console.log("Resposta da API (Termos):", data);
+
+          const termsWithItems = data.map((term: any) => ({
+            ...term,
+            items: term.items || [],
+          }));
+          setTerms(termsWithItems);
+        } else {
+          console.error("Falha ao carregar os termos.");
+        }
+      } catch (error) {
+        console.error("Erro ao carregar os termos:", error);
+      }
+    };
+
+    fetchTerms();
+  }, []);
+
+  const openTermsModal = async (term: Term) => {
+    try {
+      const response = await fetch(`http://localhost:3000/terms/${term.id}/items`);
+      const items: ConsentItem[] = await response.json();
+      setModalTermDetails({ ...term, items });
+      setModalOpened(true);
+    } catch (error) {
+      console.error("Erro ao carregar os itens de consentimento", error);
+    }
+  };
+
+  const handleItemChange = (itemIds: string[]) => {
+    console.log("Itens aceitos atualizados pelo modal:", itemIds);
+    setAcceptedTerms((prev) => {
+      const uniqueTerms = [...new Set([...prev, ...itemIds])];
+      console.log("Estado final dos itens aceitos:", uniqueTerms);
+      return uniqueTerms;
+    });
+  };
 
   const [editar, setEditar] = useState(false);
   const [cancelar, setCancelar] = useState(true);
@@ -321,6 +381,31 @@ const Perfil = () => {
             Excluir Conta
           </button>
         </div>
+        <div className="flex flex-col w-full ml-8">
+          <span className="text-2xl text-[#844c81] font-semibold">Meus termos </span>
+          {terms.map((term, index) => (
+            <span
+              key={term.id}
+              className="text-[#4b76db] hover:text-[#304d91] font-semibold"
+            >
+              <button onClick={() => openTermsModal(term)} type="button">
+                {term.title}
+              </button>
+              {index < terms.length - 1 && ", "}
+            </span>
+          ))}
+        </div>
+        {modalOpened && modalTermDetails && (
+          <Modal
+            isOpen={modalOpened}
+            onClose={() => setModalOpened(false)}
+            title={modalTermDetails.title}
+            description={modalTermDetails.description}
+            items={modalTermDetails.items}
+            onItemChange={handleItemChange}
+            acceptedTerms={acceptedTerms}
+          />
+        )}
       </div>
     </div>
   );
