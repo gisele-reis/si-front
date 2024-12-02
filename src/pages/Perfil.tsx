@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import Modal from "../components/Modal";
+import Modal2 from "../components/Modal2";
 
 const Perfil = () => {
   const [data, setData] = useState<{
@@ -34,6 +34,7 @@ const Perfil = () => {
   const [modalOpened, setModalOpened] = useState(false);
   const [modalTermDetails, setModalTermDetails] = useState<any>(null);
   const [terms, setTerms] = useState<Term[]>([]);
+  const [userId, setUserId] = useState("");
 
   const fetchData = async () => {
     try {
@@ -60,6 +61,17 @@ const Perfil = () => {
       console.log("Erro ao buscar os dados", erro);
     }
   };
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      const parts = token.split(".");
+      if (parts.length === 3) {
+        const payload = JSON.parse(atob(parts[1]));
+        setUserId(payload.sub);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     fetchData();
@@ -396,7 +408,8 @@ const Perfil = () => {
           ))}
         </div>
         {modalOpened && modalTermDetails && (
-          <Modal
+          <Modal2
+            userId={userId}
             isOpen={modalOpened}
             onClose={() => setModalOpened(false)}
             title={modalTermDetails.title}
