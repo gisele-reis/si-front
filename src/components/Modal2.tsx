@@ -23,6 +23,7 @@ const Modal2: React.FC<ModalProps> = ({
   if (!isOpen) return null;
 
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
+  const [itemsID, setItemsID] = useState<string[]>([]);
 
   useEffect(() => {
     const initialCheckedItems = items.reduce((acc, item) => {
@@ -31,10 +32,46 @@ const Modal2: React.FC<ModalProps> = ({
       return acc;
     }, {} as Record<string, boolean>);
     setCheckedItems(initialCheckedItems);
+    console.log(initialCheckedItems);
   }, [items, acceptedTerms]);
 
-  const handleCheckboxChange = (id: string, isMandatory: boolean) => {
+  useEffect(() => {
+    const fetchAcceptedItems = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:3000/terms/users/${userId}/accepted-items`
+        );
+        const data = await response.json();
+  
+        setItemsID(data.map((item: any) => item.id));
+      } catch (error) {
+        console.error("Erro ao buscar acceptedTerms:", error);
+      }
+    };
+  
+    fetchAcceptedItems();
+  }, [userId]); 
+  
+
+  const handleCheckboxChange = async (id: string, isMandatory: boolean) => {
     if (isMandatory) return;
+  
+    // Se o item for desmarcado, removemos do banco de dados
+    if (checkedItems[id]) {
+      try {
+        // Remover a relação do item com o usuário no banco de dados
+        await fetch(`http://localhost:3000/terms/users/${userId}/accepted-items/${id}`, {
+          method: "DELETE",
+        });
+  
+        // Remover o item de itemsID
+        setItemsID((prevItemsID) => prevItemsID.filter((itemId) => itemId !== id));
+      } catch (error) {
+        console.error("Erro ao remover o item:", error);
+      }
+    }
+  
+    // Atualizar o estado da checkbox
     setCheckedItems((prev) => ({
       ...prev,
       [id]: !prev[id],
@@ -96,6 +133,7 @@ const Modal2: React.FC<ModalProps> = ({
     }
   };
 
+
   return (
     <div className="fixed inset-0 flex justify-center items-center bg-gray-700 bg-opacity-50 z-50">
       <div className="bg-white p-6 rounded-lg w-[80%] max-w-xl relative">
@@ -110,7 +148,7 @@ const Modal2: React.FC<ModalProps> = ({
               <input
                 type="checkbox"
                 id={item.id}
-                checked={checkedItems[item.id] || false}
+                checked={ itemsID.includes(item.id) || checkedItems[item.id] || false}
                 onChange={() => handleCheckboxChange(item.id, item.isMandatory)}
                 className="mr-2"
                 disabled={item.isMandatory}
